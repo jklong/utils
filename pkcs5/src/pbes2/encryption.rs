@@ -42,6 +42,14 @@ pub fn encrypt_in_place<'b>(
                 .map_err(|_| CryptoError)?;
             cipher.encrypt(buffer, pos).map_err(|_| CryptoError)
         }
+        #[cfg(feature = "pbes2-des")]
+        EncryptionScheme::DesCbc { iv } => {
+            todo!()
+        }
+        #[cfg(feature = "pbes2-des")]
+        EncryptionScheme::DesEde3Cbc { iv } => {
+            todo!()
+        }
     }
 }
 
@@ -68,12 +76,12 @@ pub fn decrypt_in_place<'a>(
                 .map_err(|_| CryptoError)?;
             cipher.decrypt(buffer).map_err(|_| CryptoError)
         }
-        #[cfg(features = "pbes2-des")]
+        #[cfg(feature = "pbes2-des")]
         EncryptionScheme::DesEde3Cbc { iv } => {
             todo!()
         }
-        #[cfg(features = "pbes2-des")]
-        EncryptionScheme::DesCdc { iv } => {
+        #[cfg(feature = "pbes2-des")]
+        EncryptionScheme::DesCbc { iv } => {
             todo!()
         }
     }

@@ -30,6 +30,12 @@ pub const AES_128_CBC_OID: ObjectIdentifier = ObjectIdentifier::new("2.16.840.1.
 /// Chaining (CBC) mode of operation.
 pub const AES_256_CBC_OID: ObjectIdentifier = ObjectIdentifier::new("2.16.840.1.101.3.4.1.42");
 
+/// DES operating in CBC mode
+pub const DES_CBC_OID: ObjectIdentifier = ObjectIdentifier::new("1.3.14.3.2.7");
+
+/// Triple DES operating in CBC mode
+pub const DES_EDE3_CBC_OID: ObjectIdentifier = ObjectIdentifier::new("1.2.840.113549.3.7");
+
 /// Password-Based Encryption Scheme 2 (PBES2) OID.
 ///
 /// <https://tools.ietf.org/html/rfc8018#section-6.2>
@@ -39,7 +45,7 @@ pub const PBES2_OID: ObjectIdentifier = ObjectIdentifier::new("1.2.840.113549.1.
 const AES_BLOCK_SIZE: usize = 16;
 
 /// DES / Triple DES block size
-#[cfg(features = "pbes2-des")]
+#[cfg(feature = "pbes2-des")]
 const DES_BLOCK_SIZE: usize = 8;
 
 /// Password-Based Encryption Scheme 2 parameters as defined in [RFC 8018 Appendix A.4].
@@ -234,14 +240,14 @@ pub enum EncryptionScheme<'a> {
     },
 
     /// 3-Key Triple DES in CBC mode
-    #[cfg(features = "pbes2-des")]
+    #[cfg(feature = "pbes2-des")]
     DesEde3Cbc {
         /// Intialisation vector
         iv: &'a [u8; DES_BLOCK_SIZE],
     },
 
     /// DES in CBC mode
-    #[cfg(features = "pbes2-des")]
+    #[cfg(feature = "pbes2-des")]
     DesCbc {
         /// Initialisation vector
         iv: &'a [u8; DES_BLOCK_SIZE],
@@ -254,9 +260,9 @@ impl<'a> EncryptionScheme<'a> {
         match self {
             Self::Aes128Cbc { .. } => 16,
             Self::Aes256Cbc { .. } => 32,
-            #[cfg(features = "pbes2-des")]
+            #[cfg(feature = "pbes2-des")]
             Self::DesCbc { .. } => 8,
-            #[cfg(features = "pbes2-des")]
+            #[cfg(feature = "pbes2-des")]
             Self::DesEde3Cbc { .. } => 8,
         }
     }
@@ -266,6 +272,8 @@ impl<'a> EncryptionScheme<'a> {
         match self {
             Self::Aes128Cbc { .. } => AES_128_CBC_OID,
             Self::Aes256Cbc { .. } => AES_256_CBC_OID,
+            Self::DesCbc { .. } => DES_CBC_OID,
+            Self::DesEde3Cbc { .. } => DES_EDE3_CBC_OID,
         }
     }
 }
@@ -305,6 +313,8 @@ impl<'a> TryFrom<EncryptionScheme<'a>> for AlgorithmIdentifier<'a> {
         let parameters = OctetString::new(match scheme {
             EncryptionScheme::Aes128Cbc { iv } => iv,
             EncryptionScheme::Aes256Cbc { iv } => iv,
+            EncryptionScheme::DesCbc { iv } => iv,
+            EncryptionScheme::DesEde3Cbc { iv } => iv,
         })?;
 
         Ok(AlgorithmIdentifier {

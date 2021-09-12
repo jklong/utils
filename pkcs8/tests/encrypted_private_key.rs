@@ -250,16 +250,16 @@ fn read_pem_file() {
     assert_eq!(pkcs8_doc.as_ref(), ED25519_DER_AES256_PBKDF2_SHA256_EXAMPLE);
 }
 
-#[cfg(feature = "des")]
 #[test]
+#[cfg(feature = "des")]
 fn decrypt_ed25519_der_encpriv_des3_pbkdf2_sha256() {
     let enc_pk = EncryptedPrivateKeyInfo::try_from(ED25519_DER_DES3_PBKDF2_SHA256_EXAMPLE).unwrap();
     let pk = enc_pk.decrypt(PASSWORD).unwrap();
     assert_eq!(pk.as_ref(), ED25519_DER_PLAINTEXT_EXAMPLE);
 }
 
-#[cfg(feature = "des")]
 #[test]
+#[cfg(feature = "des")]
 fn decrypt_ed25519_der_encpriv_des_pbkdf2_sha256() {
     let enc_pk = EncryptedPrivateKeyInfo::try_from(ED25519_DER_DES_PBKDF2_SHA256_EXAMPLE).unwrap();
     let pk = enc_pk.decrypt(PASSWORD).unwrap();
