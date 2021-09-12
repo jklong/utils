@@ -31,6 +31,7 @@ hex-literal = "0.3"
 [features]
 alloc = []
 pbes2 = ["aes", "block-modes", "hmac", "pbkdf2", "scrypt", "sha2"]
+des = ["pbes2"]
 
 [package.metadata.docs.rs]
 all-features = true
