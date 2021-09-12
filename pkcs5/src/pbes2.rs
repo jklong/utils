@@ -38,6 +38,10 @@ pub const PBES2_OID: ObjectIdentifier = ObjectIdentifier::new("1.2.840.113549.1.
 /// AES cipher block size
 const AES_BLOCK_SIZE: usize = 16;
 
+/// DES / Triple DES block size
+#[cfg(features = "pbes2-des")]
+const DES_BLOCK_SIZE: usize = 8;
+
 /// Password-Based Encryption Scheme 2 parameters as defined in [RFC 8018 Appendix A.4].
 ///
 /// ```text
@@ -228,6 +232,20 @@ pub enum EncryptionScheme<'a> {
         /// Initialization vector
         iv: &'a [u8; AES_BLOCK_SIZE],
     },
+
+    /// 3-Key Triple DES in CBC mode
+    #[cfg(features = "pbes2-des")]
+    DesEde3Cbc {
+        /// Intialisation vector
+        iv: &'a [u8; DES_BLOCK_SIZE],
+    },
+
+    /// DES in CBC mode
+    #[cfg(features = "pbes2-des")]
+    DesCbc {
+        /// Initialisation vector
+        iv: &'a [u8; DES_BLOCK_SIZE],
+    },
 }
 
 impl<'a> EncryptionScheme<'a> {
@@ -236,6 +254,10 @@ impl<'a> EncryptionScheme<'a> {
         match self {
             Self::Aes128Cbc { .. } => 16,
             Self::Aes256Cbc { .. } => 32,
+            #[cfg(features = "pbes2-des")]
+            Self::DesCbc { .. } => 8,
+            #[cfg(features = "pbes2-des")]
+            Self::DesEde3Cbc { .. } => 8,
         }
     }
 
