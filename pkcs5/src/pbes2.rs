@@ -263,7 +263,7 @@ impl<'a> EncryptionScheme<'a> {
             #[cfg(feature = "pbes2-des")]
             Self::DesCbc { .. } => 8,
             #[cfg(feature = "pbes2-des")]
-            Self::DesEde3Cbc { .. } => 8,
+            Self::DesEde3Cbc { .. } => 24,
         }
     }
 
@@ -291,16 +291,31 @@ impl<'a> TryFrom<AlgorithmIdentifier<'a>> for EncryptionScheme<'a> {
 
     fn try_from(alg: AlgorithmIdentifier<'a>) -> der::Result<Self> {
         // TODO(tarcieri): support for non-AES algorithms?
-        let iv = alg
-            .parameters_any()?
-            .octet_string()?
-            .as_bytes()
-            .try_into()
-            .map_err(|_| der::Tag::OctetString.value_error())?;
+        let iv = alg.parameters_any()?.octet_string()?.as_bytes();
 
         match alg.oid {
-            AES_128_CBC_OID => Ok(Self::Aes128Cbc { iv }),
-            AES_256_CBC_OID => Ok(Self::Aes256Cbc { iv }),
+            AES_128_CBC_OID => Ok(Self::Aes128Cbc {
+                iv: iv
+                    .try_into()
+                    .map_err(|_| der::Tag::OctetString.value_error())?,
+            }),
+            AES_256_CBC_OID => Ok(Self::Aes256Cbc {
+                iv: iv
+                    .try_into()
+                    .map_err(|_| der::Tag::OctetString.value_error())?,
+            }),
+            #[cfg(feature = "pbes2-des")]
+            DES_CBC_OID => Ok(Self::DesCbc {
+                iv: iv[0..DES_BLOCK_SIZE]
+                    .try_into()
+                    .map_err(|_| der::Tag::OctetString.value_error())?,
+            }),
+            #[cfg(feature = "pbes2-des")]
+            DES_EDE3_CBC_OID => Ok(Self::DesEde3Cbc {
+                iv: iv[0..DES_BLOCK_SIZE]
+                    .try_into()
+                    .map_err(|_| der::Tag::OctetString.value_error())?,
+            }),
             oid => Err(ErrorKind::UnknownOid { oid }.into()),
         }
     }

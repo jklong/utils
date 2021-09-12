@@ -69,8 +69,8 @@ const PBES2_PBKDF2_SHA256_DESEDE3CBC_ALG_ID: &[u8] = &hex!(
 /// and PBKDF2-SHA265
 #[cfg(feature = "des")]
 const ED25519_PKCS8_KEY_CIPHERTEXT_DESEDE3CBC: &[u8] = &hex!(
-    "0F643451113C8A6100DFBD6D8843EB479855D8B30F9D4E4B8155947F62C87F31
-     F8E1D67D3251AA87E9B8E0F9908828640CB6A111B6C9FE7F"
+    "2D8E4CBA271A1D33659426883BB7B405D5CFFC64AEE868AB0B5774B88C12056FE
+     C6CAE1D9A12DDE51140DFD799D825ACD592172763866F93"
 );
 
 /// PBES2 + DES-CBC + PBKDF-SHA2 `AlgorithmIdentifier` example.
@@ -112,7 +112,7 @@ fn decrypt_pbes2_scrypt_aes256cbc() {
 }
 
 #[test]
-#[cfg(feature = "des")]
+#[cfg(feature = "pbes2-des")]
 fn decrypt_pbes2_pbkdf2_sha256_desede3cbc() {
     let scheme = pkcs5::EncryptionScheme::try_from(PBES2_PBKDF2_SHA256_DESEDE3CBC_ALG_ID).unwrap();
     let mut buffer = Vec::from(ED25519_PKCS8_KEY_CIPHERTEXT_DESEDE3CBC);
@@ -121,7 +121,7 @@ fn decrypt_pbes2_pbkdf2_sha256_desede3cbc() {
 }
 
 #[test]
-#[cfg(feature = "des")]
+#[cfg(feature = "pbes2-des")]
 fn decrypt_pbes2_pbkdf2_sha256_descbc() {
     let scheme = pkcs5::EncryptionScheme::try_from(PBES2_PBKDF2_SHA256_DESCBC_ALG_ID).unwrap();
     let mut buffer = Vec::from(ED25519_PKCS8_KEY_CIPHERTEXT_DESCBC);
