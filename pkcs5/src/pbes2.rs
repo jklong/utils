@@ -272,7 +272,9 @@ impl<'a> EncryptionScheme<'a> {
         match self {
             Self::Aes128Cbc { .. } => AES_128_CBC_OID,
             Self::Aes256Cbc { .. } => AES_256_CBC_OID,
+            #[cfg(feature = "pbes2-des")]
             Self::DesCbc { .. } => DES_CBC_OID,
+            #[cfg(feature = "pbes2-des")]
             Self::DesEde3Cbc { .. } => DES_EDE3_CBC_OID,
         }
     }
@@ -328,7 +330,9 @@ impl<'a> TryFrom<EncryptionScheme<'a>> for AlgorithmIdentifier<'a> {
         let parameters = OctetString::new(match scheme {
             EncryptionScheme::Aes128Cbc { iv } => iv,
             EncryptionScheme::Aes256Cbc { iv } => iv,
+            #[cfg(feature = "pbes2-des")]
             EncryptionScheme::DesCbc { iv } => iv,
+            #[cfg(feature = "pbes2-des")]
             EncryptionScheme::DesEde3Cbc { iv } => iv,
         })?;
 
